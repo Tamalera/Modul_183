@@ -5,13 +5,14 @@ const session = require('express-session')
 const FileStore = require('session-file-store')(session);
 const bodyParser = require('body-parser');
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const axios = require('axios');
 const path = require('path');
 const mysql = require('mysql');
 const bcrypt = require('bcrypt');
+
+// Needed for encryption of PW
 const saltRounds = 10;
 
+// TODO: Get mysql connection in different file
 const connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
@@ -57,9 +58,9 @@ app.get('/auth', (req, res) => {
       res.sendFile(path.join(__dirname + '/memberZone.html'));
     }
     else {
-    console.log("User: " + req.session.email + " wanted to get here.");
-    res.sendFile(path.join(__dirname + '/errorPage.html'));
-  }
+      console.log("User: " + req.session.email + " wanted to get here.");
+      res.sendFile(path.join(__dirname + '/errorPage.html'));
+    }
   }
 })
 
@@ -67,14 +68,14 @@ app.get('/logout', (req, res) => {
   if (req.session) {
     if (req.session.email) {
       console.log("User: " + req.session.email + " logged out.");
-    // undo session
-    req.session.loggedin = false;
-    req.session.email = '';
-    req.session.destroy();
-    res.redirect('/');
-  } else {
-      console.log("Unknown user wanted to log out");
-      res.sendFile(path.join(__dirname + '/errorPage.html'));
+      // undo session
+      req.session.loggedin = false;
+      req.session.email = '';
+      req.session.destroy();
+      res.redirect('/');
+    } else {
+        console.log("Unknown user wanted to log out");
+        res.sendFile(path.join(__dirname + '/errorPage.html'));
     }
   }
 })
