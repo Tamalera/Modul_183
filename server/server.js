@@ -19,13 +19,6 @@ const connection = mysql.createConnection({
   database : 'dev_DB'
 });
 
-axios({
-  url: 'localhost:3000',
-  maxContentLength: 2000,
-}).catch((error) => {
-  error.request.res.destroy();
-});
-
 // create the server
 const app = express();
 
