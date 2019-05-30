@@ -7,45 +7,16 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const axios = require('axios');
-const bcrypt = require('bcrypt-nodejs');
 const path = require('path');
 const mysql = require('mysql');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
-var connection = mysql.createConnection({
+const connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
   password : 'root',
   database : 'dev_DB'
-});
-
-// configure passport.js to use the local strategy
-passport.use(new LocalStrategy(
-  { usernameField: 'email' },
-  (email, password, done) => {
-    axios.get(`http://localhost:5000/users?email=${email}`)
-    .then(res => {
-      const user = res.data[0]
-      if (!user) {
-        return done(null, false, { message: 'Invalid credentials.\n' });
-      }
-      if (!bcrypt.compareSync(password, user.password)) {
-        return done(null, false, { message: 'Invalid credentials.\n' });
-      }
-      return done(null, user);
-    })
-    .catch(error => done(error));
-  }
-));
-
-// tell passport how to serialize the user
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser((id, done) => {
-  axios.get(`http://localhost:5000/users/${id}`)
-  .then(res => done(null, res.data) )
-  .catch(error => done(error, false))
 });
 
 // create the server
@@ -63,31 +34,78 @@ app.use(session({
   resave: false,
   saveUninitialized: true
 }))
+
 app.use(passport.initialize());
 app.use(passport.session());
 
-// create the homepage route at '/'
+// create routes
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname + '/login.html'));
+  if(req.session){
+    res.sendFile(path.join(__dirname + '/login.html'));
+  }
 })
 
-app.post('/login', (req, res, next) => {
-  passport.authenticate('local', (err, user, info) => {
-    if(info) {return res.send(info.message)}
-    if (err) { return next(err); }
-    if (!user) { return res.redirect('/'); }
-    req.login(user, (err) => {
-      if (err) { return next(err); }
-      return res.redirect('/authenticated');
-    })
-  })(req, res, next);
+app.get('/auth', (req, res) => {
+  if(req.session){
+    if(req.session.loggedin){
+      res.sendFile(path.join(__dirname + '/memberZone.html'));
+    }
+    else {
+    console.log("User: " + req.session.email + " wanted to get here.");
+    res.sendFile(path.join(__dirname + '/errorPage.html'));
+  }
+  }
 })
 
-app.get('/authenticated', (req, res) => {
-  if(req.isAuthenticated()) {
-    res.sendFile(path.join(__dirname + '/memberZone.html'));
+app.get('/logout', (req, res) => {
+  if (req.session) {
+    if (req.session.email) {
+      console.log("User: " + req.session.email + " logged out.");
+    // undo session
+    req.session.loggedin = false;
+    req.session.email = '';
+    req.session.destroy();
+    res.redirect('/');
   } else {
-    res.redirect('/')
+      console.log("Unknown user wanted to log out");
+      res.sendFile(path.join(__dirname + '/errorPage.html'));
+    }
+  }
+})
+
+
+app.post('/login', (request, response) => {
+  let username = request.body.email;
+  let password = request.body.password;
+
+  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  const emailOk = re.test(String(username).toLowerCase())
+
+  if (username && emailOk) {
+    let sql = "SELECT * FROM ?? WHERE ?? = ?";
+    const inserts = ['testUsers', 'email', username];
+    sql = mysql.format(sql, inserts);
+    connection.query(sql, function(error, results, fields) {
+      if (results.length > 0) {
+        if (bcrypt.compareSync(password, results[0].password)) {
+          request.session.loggedin = true;
+          request.session.email = username;
+          console.log("User: " + username + " logged in.");
+          response.redirect('/auth');
+        } else {
+        console.log("User: " + username + " used wrong credentials.");
+        response.send('Incorrect Username and/or Password!');
+      }
+      } else {
+        console.log("No user found in DB with: " + username);
+        response.send('Incorrect Username and/or Password!');
+      }     
+      response.end();
+    });
+  } else {
+    console.log("Incomplete credentials used");
+    response.send('Please enter Username and Password!');
+    response.end();
   }
 })
 
