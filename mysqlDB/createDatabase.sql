@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `testUsers` (
   `password` varchar(255) NOT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
-INSERT INTO `testUsers` (`id`, `email`, `password`) VALUES (1, 'test@test.com', '$2a$10$5GEG2RtotdrFHooO9XZe.ew0etF5jczJbei9pAuPnt7s5TT.DDaca');
+INSERT INTO `testUsers` (`id`, `email`, `password`) VALUES (1, 'test@test.com', '');
 
 ALTER TABLE `testUsers` ADD PRIMARY KEY (`id`);
 ALTER TABLE `testUsers` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;

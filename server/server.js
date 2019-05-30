@@ -40,6 +40,12 @@ app.use(passport.session());
 
 // create routes
 app.get('/', (req, res) => {
+  // Initially set password:
+  /*
+  bcrypt.hash('password', saltRounds).then(function(hash) {
+    connection.query("UPDATE testUsers SET password = hash WHERE email='test@test.com';");
+  });
+  */
   if(req.session){
     res.sendFile(path.join(__dirname + '/login.html'));
   }
