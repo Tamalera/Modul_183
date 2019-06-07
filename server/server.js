@@ -20,21 +20,24 @@ const connection = mysql.createConnection({
   database : 'dev_DB'
 });
 
-// create the server
-const app = express();
-
-// add & configure middleware
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
-app.use(session({
+let options = {
   genid: (req) => {
     return uuid() // use UUIDs for session IDs
   },
   store: new FileStore(),
   secret: 'keyboard cat',
   resave: false,
-  saveUninitialized: true
-}))
+  saveUninitialized: true,
+  name: 'my.connect.sid'
+};
+
+// create the server
+const app = express();
+
+// add & configure middleware
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+app.use(session(options))
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -72,6 +75,8 @@ app.get('/logout', (req, res) => {
       req.session.loggedin = false;
       req.session.email = '';
       req.session.destroy();
+      req.logout();
+      res.clearCookie(options.name);
       res.redirect('/');
     } else {
         console.log("Unknown user wanted to log out");
