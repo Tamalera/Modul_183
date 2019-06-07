@@ -10,9 +10,9 @@ These instructions will get you a copy of the project up and running on your loc
 
 These things you need to install beforehand:
 
-- Node
-- NPM
-- mysql
+- [Node](https://nodejs.org/en/)
+- [NPM](https://www.npmjs.com/get-npm)
+- [mysql](https://wiki.ubuntuusers.de/MySQL/)
 
 Clone this repo.
 
@@ -37,6 +37,8 @@ mysql -u root -p
 Insert your root-password.
 
 Fill database with data like in "createDatabase.sql"
+
+!! Change Password in table to hashed one !!
 
 ### Run server
 ```
