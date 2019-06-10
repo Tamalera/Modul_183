@@ -46,3 +46,15 @@ npm run dev:server
 ```
 
 In browser: localhost:3000
+
+For static code analysis
+
+```
+npm run lint
+```
+
+Run unit tests
+
+```
+npm run test
+```

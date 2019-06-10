@@ -11,6 +11,7 @@ const bcrypt = require('bcrypt');
 const { check } = require('express-validator/check');
 
 // Needed for encryption of PW
+// eslint-disable-next-line no-unused-vars
 const saltRounds = 10;
 
 // TODO: Get mysql connection in different file
@@ -22,6 +23,7 @@ const connection = mysql.createConnection({
 });
 
 const options = {
+  // eslint-disable-next-line no-unused-vars
   genid: req => uuid(), // use UUIDs for session IDs
   store: new FileStore(),
   secret: 'keyboard cat',
@@ -133,3 +135,5 @@ app.post('/login', [
 app.listen(3000, () => {
   console.log('Listening on localhost:3000');
 });
+
+module.exports = app;
