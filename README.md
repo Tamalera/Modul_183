@@ -47,11 +47,14 @@ npm run dev:server
 
 In browser: localhost:3000
 
-For static code analysis
+### Static code analysis
+
+Using eslint run:
 
 ```
 npm run lint
 ```
+### Testing
 
 Run unit tests
 
