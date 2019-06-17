@@ -9,6 +9,8 @@ const path = require('path');
 const mysql = require('mysql');
 const bcrypt = require('bcrypt');
 const { check } = require('express-validator/check');
+const csrf = require('csurf');
+const cookieParser = require('cookie-parser');
 
 // Needed for encryption of PW
 // eslint-disable-next-line no-unused-vars
@@ -39,6 +41,8 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(session(options));
+app.use(cookieParser());
+app.use(csrf());
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -52,6 +56,7 @@ app.get('/', (req, res) => {
   });
   */
   if (req.session) {
+    res.cookie('csrfToken', req.csrfToken());
     res.sendFile(path.join(`${__dirname}/login.html`));
   }
 });
@@ -114,19 +119,22 @@ app.post('/login', [
         }
         else {
           console.log(`User: ${username} used wrong credentials.`);
-          response.send('Incorrect Username and/or Password!');
+          // response.send('Incorrect Username and/or Password!');
+          response.sendFile(path.join(`${__dirname}/errorPage.html`));
         }
       }
       else {
         console.log(`No user found in DB with: ${username}`);
-        response.send('Incorrect Username and/or Password!');
+        // response.send('Incorrect Username and/or Password!');
+        response.sendFile(path.join(`${__dirname}/errorPage.html`));
       }
       response.end();
     });
   }
   else {
     console.log('Incomplete credentials used');
-    response.send('Please enter Username and Password!');
+    // response.send('Please enter Username and Password!');
+    response.sendFile(path.join(`${__dirname}/errorPage.html`));
     response.end();
   }
 });

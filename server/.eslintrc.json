@@ -1,0 +1,34 @@
+{
+    "extends": "airbnb-base",
+    "env": {
+        "es6": true,
+        "node": true,
+        "mocha": true
+    },
+    "rules": {
+        "brace-style": [
+            "error",
+            "stroustrup"
+        ],
+        "comma-dangle": [
+            "error",
+            "never"
+        ],
+        "no-unused-vars": [
+            "warn"
+        ],
+        "no-var": [
+            "off"
+        ],
+        "one-var": [
+            "off"
+        ],
+        "no-console": 0,
+        "no-unused-expressions": 0,
+        "chai-friendly/no-unused-expressions": 2
+    },
+    "plugins": [
+        "chai-friendly"
+    ]
+
+}

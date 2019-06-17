@@ -33,6 +33,19 @@
 			font-weight: bold;
 			color: #ffffff;
 		}
+		body {
+  			background-color: #ff7f2e;
+  			font-family: "Concert One", cursive;
+  			margin: 0;
+  			overflow: hidden;
+  			padding: 0;
+		}
+		input {
+  			font-family: "Concert One", cursive;
+  			margin: 0;
+  			overflow: hidden;
+  			padding: 0;
+		}
 		</style>
 	</head>
 	<body>
@@ -41,8 +54,18 @@
 			<form action="login" method="POST">
 				<input type="email" name="email" placeholder="Email" required>
 				<input type="password" name="password" placeholder="Password" required>
-				<input type="submit">
+				<input type="submit" value="Send">
+				<input id="hidden-csrf" type="hidden" name="_csrf">
 			</form>
 		</div>
 	</body>
+	<script>
+		window.onload = function() {
+    	var csrfInput = document.getElementById("hidden-csrf");
+    	var csrfFull = document.cookie;
+    	var csrf = csrfFull.substring(10, 46);
+    	csrfInput.value = csrf;
+	};
+	</script>
+
 </html>
