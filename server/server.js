@@ -102,6 +102,7 @@ app.post('/login', [
   const username = request.body.email;
   const { password } = request.body;
 
+  // Source: https://stackoverflow.com/questions/38091894/regular-expression-for-email-not-working
   const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   const emailOk = re.test(String(username).toLowerCase());
 
@@ -119,13 +120,11 @@ app.post('/login', [
         }
         else {
           console.log(`User: ${username} used wrong credentials.`);
-          // response.send('Incorrect Username and/or Password!');
           response.sendFile(path.join(`${__dirname}/errorPage.html`));
         }
       }
       else {
         console.log(`No user found in DB with: ${username}`);
-        // response.send('Incorrect Username and/or Password!');
         response.sendFile(path.join(`${__dirname}/errorPage.html`));
       }
       response.end();
@@ -133,13 +132,13 @@ app.post('/login', [
   }
   else {
     console.log('Incomplete credentials used');
-    // response.send('Please enter Username and Password!');
     response.sendFile(path.join(`${__dirname}/errorPage.html`));
     response.end();
   }
 });
 
 // tell the server what port to listen on
+// For SSL use: https://hackernoon.com/set-up-ssl-in-nodejs-and-express-using-openssl-f2529eab5bb
 app.listen(3000, () => {
   console.log('Listening on localhost:3000');
 });
